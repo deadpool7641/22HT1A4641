@@ -60,6 +60,6 @@ app.get('/shorturls/:code', async (req, res) => {
     res.redirect(entry.url);
 });
 
-app.listen(4000, () => {
+app.listen(3000, () => {
     console.log('Server running on http://localhost:4000');
 });
