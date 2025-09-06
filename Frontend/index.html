@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>URL Shortener</title>
+</head>
+<body>
+    <h1>URL Shortener</h1>
+    <form id="shortenForm">
+        <label>Long URL:<br>
+            <input type="url" id="url" required style="width: 400px;">
+        </label><br><br>
+        <label>Custom Shortcode (optional):<br>
+            <input type="text" id="shortcode">
+        </label><br><br>
+        <label>Validity (minutes, optional):<br>
+            <input type="number" id="validity" min="1">
+        </label><br><br>
+        <button type="submit">Shorten</button>
+    </form>
+    <div id="result"></div>
+    <script>
+        document.getElementById('shortenForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const url = document.getElementById('url').value;
+            const shortcode = document.getElementById('shortcode').value;
+            const validity = document.getElementById('validity').value;
+
+            let data = { url };
+            if (shortcode) data.shortcode = shortcode;
+            if (validity) data.validity = Number(validity);
+
+            const response = await fetch('http://localhost:4000/shorturls', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const resultDiv = document.getElementById('result');
+            if (response.ok) {
+                const json = await response.json();
+                resultDiv.innerHTML = `<b>Short URL:</b> <a href="${json.shortUrl}" target="_blank">${json.shortUrl}</a><br><b>Expires:</b> ${json.expiry}`;
+            } else {
+                const error = await response.json();
+                resultDiv.innerHTML = `<b style="color:red">Error: ${error.message}</b>`;
+            }
+        };
+    </script>
+</body>
+</html>
